@@ -1,0 +1,69 @@
+appId: com.chuhaibang.app
+productName: Chuhai Bang
+copyright: Copyright © 2026 Chuhai Bang
+
+directories:
+  output: release
+  buildResources: build
+
+files:
+  - dist/**/*
+  - dist-electron/**/*
+  - public/logo.png
+  - public/logo-512.png
+  - public/app.ico
+  - "!node_modules/**/*"
+  - "!server/**/*"
+  - "!docs/**/*"
+  - "!scripts/**/*"
+  - "!electron/**/*"
+  - "!*.md"
+
+extraMetadata:
+  main: dist-electron/main.js
+  type: commonjs
+
+asar: true
+
+win:
+  target:
+    - target: nsis
+      arch:
+        - x64
+  icon: public/app.ico
+
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  installerIcon: public/app.ico
+  uninstallerIcon: public/app.ico
+  installerHeaderIcon: public/app.ico
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: Chuhai Bang
+
+mac:
+  target:
+    - target: dmg
+      arch:
+        - x64
+        - arm64
+  icon: public/logo-512.png
+  category: public.app-category.productivity
+
+dmg:
+  contents:
+    - x: 130
+      y: 220
+    - x: 410
+      y: 220
+      type: link
+      path: /Applications
+
+linux:
+  target:
+    - target: AppImage
+      arch:
+        - x64
+  icon: public/logo-512.png
+  category: Graphics

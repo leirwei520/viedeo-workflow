@@ -1,0 +1,61 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+dist-electron
+release
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+#env
+.env
+.env.*.local
+.env.development
+.env.production
+.env.test
+
+
+# data
+library/
+
+# docs
+docs/cloud_migration_plan.md
+docs/*.xlsx
+
+# Python virtual environment (local models)
+venv/
+vsr-env/
+__pycache__/
+*.pyc
+
+# video-subtitle-remover (cloned locally)
+tools/video-subtitle-remover/
+
+# Local AI models (too large to commit)
+models/
+.offload_cache/
+
+# Agent workflows and shared utilities
+.agent/
+.shared/
+
+# Local settings (library path etc.)
+settings.json

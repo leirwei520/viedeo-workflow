@@ -1,0 +1,13 @@
+node_modules
+dist
+dist-electron
+release
+library
+models
+venv
+.git
+.env
+.env.*
+.DS_Store
+coverage
+__pycache__

@@ -1,0 +1,108 @@
+/**
+ * generationService.ts
+ * 
+ * Frontend service layer for AI content generation.
+ * Proxies requests to backend API which handles multiple providers:
+ * - Image: Gemini Pro, Kling AI
+ * - Video: Veo 3.1, Kling AI
+ */
+
+import { authFetch, apiEndpoint } from '../config/api';
+
+export interface GenerateImageParams {
+  prompt: string;
+  aspectRatio?: string;
+  resolution?: string;
+  imageBase64?: string | string[]; // Supports single image or array of images
+  imageModel?: string; // Image model version (e.g., 'gemini-pro', 'kling-v2')
+  nodeId?: string; // ID of the node initiating generation
+  // Kling V1.5 reference settings
+  klingReferenceMode?: 'subject' | 'face';
+  klingFaceIntensity?: number; // 0-100
+  klingSubjectIntensity?: number; // 0-100
+}
+
+export interface GenerateVideoParams {
+  prompt: string;
+  imageBase64?: string; // For Image-to-Video (start frame) - backwards compatible
+  lastFrameBase64?: string; // For frame-to-frame interpolation (end frame) - backwards compatible
+  frameImages?: string[]; // Array of all frame images (for multi-frame mode)
+  aspectRatio?: string;
+  resolution?: string; // Add resolution to params
+  duration?: number; // Video duration in seconds (e.g., 5, 6, 8, 10)
+  videoModel?: string; // Video model version (e.g., 'veo-3.1', 'kling-v2-1')
+  motionReferenceUrl?: string; // For Kling 2.6 motion control
+  referenceVideoUrls?: string[]; // For Tencent models with supportsReferenceVideo (Kling 3.0-Omni, Vidu, Sora)
+  generateAudio?: boolean; // For Kling 2.6 and Veo 3.1 native audio (default: true)
+  nodeId?: string; // ID of the node initiating generation
+}
+
+/** Sentinel value indicating the task was enqueued (no immediate result). */
+export const QUEUED = '__QUEUED__';
+
+/**
+ * Generates an image by calling the backend API.
+ * Returns the resultUrl for direct execution, or QUEUED when task is enqueued.
+ */
+export const generateImage = async (params: GenerateImageParams): Promise<string> => {
+  try {
+    const response = await authFetch(apiEndpoint('/api/generate-image'), {
+      method: 'POST',
+      body: JSON.stringify(params)
+    });
+
+    if (!response.ok) {
+      const errData = await response.json().catch(() => ({}));
+      throw new Error(errData.error || response.statusText);
+    }
+
+    const data = await response.json();
+
+    // 202 Accepted → task enqueued to RabbitMQ, recovery poller will pick up
+    if (response.status === 202 || data.status === 'queued') {
+      return QUEUED;
+    }
+
+    if (!data.resultUrl) {
+      throw new Error("No image data returned from server");
+    }
+    return data.resultUrl;
+
+  } catch (error) {
+    console.error("Image Generation Error:", error);
+    throw error;
+  }
+};
+
+/**
+ * Generates a video by calling the backend API.
+ * Returns the resultUrl for direct execution, or QUEUED when task is enqueued.
+ */
+export const generateVideo = async (params: GenerateVideoParams): Promise<string> => {
+  try {
+    const response = await authFetch(apiEndpoint('/api/generate-video'), {
+      method: 'POST',
+      body: JSON.stringify(params)
+    });
+
+    if (!response.ok) {
+      const errData = await response.json().catch(() => ({}));
+      throw new Error(errData.error || response.statusText);
+    }
+
+    const data = await response.json();
+
+    if (response.status === 202 || data.status === 'queued') {
+      return QUEUED;
+    }
+
+    if (!data.resultUrl) {
+      throw new Error("No video data returned from server");
+    }
+    return data.resultUrl;
+
+  } catch (error) {
+    console.error("Video Generation Error:", error);
+    throw error;
+  }
+};

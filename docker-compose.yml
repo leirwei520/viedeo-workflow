@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  twitcanva:
+    build: .
+    image: twitcanva:latest
+    container_name: twitcanva-app
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./library:/app/library
+    environment:
+      - NODE_ENV=production
+      # AI API keys
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - KLING_ACCESS_KEY=${KLING_ACCESS_KEY}
+      - KLING_SECRET_KEY=${KLING_SECRET_KEY}
+      - HAILUO_API_KEY=${HAILUO_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - FAL_API_KEY=${FAL_API_KEY}
+      # Aliyun OSS
+      - OSS_ENDPOINT=${OSS_ENDPOINT}
+      - OSS_BUCKET=${OSS_BUCKET}
+      - OSS_ACCESS_KEY=${OSS_ACCESS_KEY}
+      - OSS_ACCESS_SECRET=${OSS_ACCESS_SECRET}
+      - OSS_DOMAIN=${OSS_DOMAIN}
+      # MySQL
+      - MYSQL_HOST=${MYSQL_HOST}
+      - MYSQL_PORT=${MYSQL_PORT:-3306}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      # Redis
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT:-6379}
+      - REDIS_DATABASE=${REDIS_DATABASE:-10}
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+    restart: unless-stopped
