@@ -119,6 +119,8 @@ docker compose up -d
 
 — 中巨量 · <https://www.zhongjuliang.com/>
 
+十分感谢顶尖AI社区Linux.do : https://linux.do/
+
 ## 📄 许可证 / License
 
 本项目基于 **Apache License 2.0** 开源，详见 [`LICENSE`](./LICENSE) 与 [`NOTICE`](./NOTICE)。
